@@ -1,0 +1,41 @@
+/// <summary>
+/// Generates a new invoice number in the form IV-DDMMYY or, if there are
+/// already entries for today, IV-DDMMYY-001, IV-DDMMYY-002, etc.
+/// It will look at your StockIn table’s InvoiceNo column to pick the next sequence.
+/// </summary>
+private string GenerateInvoiceNumber()
+{
+    // 1) Base prefix for today
+    string datePart = DateTime.Now.ToString("ddMMyy");
+    string basePrefix = "IV-" + datePart;
+
+    // 2) We’ll look for existing InvoiceNo in StockIn that start with “IV-DDMMYY-”
+    string searchPrefix = basePrefix + "-";
+
+    int nextSeq = 1;
+    string sql = @"
+        SELECT TOP 1 InvoiceNo 
+        FROM StockIn 
+        WHERE InvoiceNo LIKE @searchPrefix + '%' 
+        ORDER BY InvoiceNo DESC";
+
+    using (var cn = new SqlConnection(connectionString))
+    using (var cmd = new SqlCommand(sql, cn))
+    {
+        cmd.Parameters.AddWithValue("@searchPrefix", searchPrefix);
+        cn.Open();
+        var lastInvoice = cmd.ExecuteScalar() as string;
+        if (!string.IsNullOrEmpty(lastInvoice))
+        {
+            // lastInvoice e.g. "IV-090725-003"
+            var parts = lastInvoice.Split('-');
+            if (parts.Length == 3 && int.TryParse(parts[2], out int lastNum))
+                nextSeq = lastNum + 1;
+        }
+    }
+
+    // 3) If there were no entries at all in StockIn for today, you can
+    //    return just “IV-DDMMYY” (no .-001 suffix), or always include suffix.
+    //    Here’s always including a three-digit suffix:
+    return $"{basePrefix}-{nextSeq:000}";
+}
