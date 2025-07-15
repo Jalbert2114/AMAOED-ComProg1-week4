@@ -1,0 +1,4 @@
+SELECT Model, SUM(Qty) AS Qty
+FROM tblMasterList
+GROUP BY Model
+ORDER BY Model;
