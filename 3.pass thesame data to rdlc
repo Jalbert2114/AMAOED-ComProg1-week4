@@ -1,0 +1,22 @@
+private void PrintDeliveryNote()
+{
+    // Use the same dataset and adapter
+    Deliverynote.tblStockinDataTable dt = new Deliverynote.tblStockinDataTable();
+    DeliverynoteTableAdapters.tblStockinTableAdapter adapter = new DeliverynoteTableAdapters.tblStockinTableAdapter();
+    adapter.FillByRefno(dt, txtRefNo.Text.Trim());
+
+    // Setup report viewer
+    ReportDataSource rds = new ReportDataSource("DataSet1", dt); // Match your RDLC dataset name
+
+    reportViewer1.LocalReport.DataSources.Clear();
+    reportViewer1.LocalReport.ReportPath = "DeliverynoteLayout.rdlc";
+    reportViewer1.LocalReport.DataSources.Add(rds);
+
+    // Optional: pass parameters
+    ReportParameter[] parameters = {
+        new ReportParameter("refno", txtRefNo.Text.Trim())
+    };
+    reportViewer1.LocalReport.SetParameters(parameters);
+
+    reportViewer1.RefreshReport();
+}
