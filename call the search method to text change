@@ -1,1 +1,1 @@
-LoadStockinByRefNo(txtRefNo.Text);
+call when searching
