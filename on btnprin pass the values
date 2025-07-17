@@ -1,28 +1,4 @@
 private void btnPrint_Click(object sender, EventArgs e)
 {
-    DataTable dt = (DataTable)dataGridView1.DataSource;
-
-    ReportDataSource rds = new ReportDataSource("DataSet1", dt); // "DataSet1" is your RDLC dataset name
-
-    ReportViewer reportViewer = new ReportViewer();
-    reportViewer.ProcessingMode = ProcessingMode.Local;
-    reportViewer.LocalReport.ReportPath = "DeliverynoteLayout.rdlc";
-    reportViewer.LocalReport.DataSources.Clear();
-    reportViewer.LocalReport.DataSources.Add(rds);
-
-    // Optional: pass parameter like refno
-    ReportParameter[] rp = new ReportParameter[]
-    {
-        new ReportParameter("refno", txtRefNo.Text)
-    };
-    reportViewer.LocalReport.SetParameters(rp);
-
-    reportViewer.RefreshReport();
-
-    // Show in new form with ReportViewer
-    Form frm = new Form();
-    reportViewer.Dock = DockStyle.Fill;
-    frm.Controls.Add(reportViewer);
-    frm.WindowState = FormWindowState.Maximized;
-    frm.ShowDialog();
+    PrintDeliveryNote();
 }
