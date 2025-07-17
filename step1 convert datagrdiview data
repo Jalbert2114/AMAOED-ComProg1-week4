@@ -24,3 +24,58 @@ private DataTable ConvertGridToDataTable()
 
     return dt;
 }
+
+
+
+use this
+
+
+
+private System.Data.DataTable ConvertGridToDataTable()
+{
+    System.Data.DataTable dt = new System.Data.DataTable();
+
+    // Define columns — must match RDLC fields (case-sensitive)
+    dt.Columns.Add("refno", typeof(string));
+    dt.Columns.Add("p_code", typeof(string));
+    dt.Columns.Add("brand", typeof(string));
+    dt.Columns.Add("CategoryName", typeof(string));
+    dt.Columns.Add("Store", typeof(string));
+    dt.Columns.Add("Status", typeof(string));
+    dt.Columns.Add("Model", typeof(string));
+    dt.Columns.Add("Serial", typeof(string));
+    dt.Columns.Add("Receiving_Date", typeof(string));
+    dt.Columns.Add("description", typeof(string));
+    dt.Columns.Add("Receivers_name", typeof(string));
+    dt.Columns.Add("qty", typeof(string));
+    dt.Columns.Add("StockinDate", typeof(string));
+    dt.Columns.Add("Stockinby", typeof(string));
+    dt.Columns.Add("Location", typeof(string));
+
+    // Fill data from DataGridView
+    foreach (DataGridViewRow row in dataGridView1.Rows)
+    {
+        if (!row.IsNewRow)
+        {
+            dt.Rows.Add(
+                row.Cells["refno"].Value?.ToString() ?? "",
+                row.Cells["p_code"].Value?.ToString() ?? "",
+                row.Cells["brand"].Value?.ToString() ?? "",
+                row.Cells["CategoryName"].Value?.ToString() ?? "",
+                row.Cells["Store"].Value?.ToString() ?? "",
+                row.Cells["Status"].Value?.ToString() ?? "",
+                row.Cells["Model"].Value?.ToString() ?? "",
+                row.Cells["Serial"].Value?.ToString() ?? "",
+                row.Cells["Receiving_Date"].Value?.ToString() ?? "",
+                row.Cells["description"].Value?.ToString() ?? "",
+                row.Cells["Receivers_name"].Value?.ToString() ?? "",
+                row.Cells["qty"].Value?.ToString() ?? "",
+                row.Cells["StockinDate"].Value?.ToString() ?? "",
+                row.Cells["Stockinby"].Value?.ToString() ?? "",
+                row.Cells["Location"].Value?.ToString() ?? ""
+            );
+        }
+    }
+
+    return dt;
+}
