@@ -1,0 +1,58 @@
+ public void LoadDeliveryHistory()
+        {
+            try
+            {
+                // LoadStockInGrid(txtSearch.Text.Trim());
+                string RefNo, PCode, Store, BrandId, CatId, Status, Model, SN, Description, Prepared, Quantity, Stockinby, Location;
+                int i;
+                string R_Date, StockinDate;
+
+                i = 0;
+
+                dataGridView1.Rows.Clear();
+                cn.Open();
+
+                string query = @"SELECT s.refno, s.p_code, B.brand, C.CategoryName, s.Store, s.Status, s.Model, s.Serial, s.Receiving_Date, s.description, s.Receivers_name, s.qty, s.StockinDate, s.Stockinby, s.Location 
+                                    FROM tblStockin AS s  
+                                    INNER JOIN tblBrand AS B ON B.id = s.b_id 
+                                    INNER JOIN tblCategory AS C ON C.id = s.c_id  
+                                WHERE MODEL LIKE @search or description LIKE @search or refno LIKE @search or Serial LIKE @search or Receivers_name LIKE @search or Location LIKE @search or p_code LIKE @search";
+                cm = new SqlCommand(query, cn);
+                cm.Parameters.AddWithValue("@search", "%" + txtSearch.Text.Trim() + "%");
+                dr = cm.ExecuteReader();
+                while (dr.Read())
+                {
+                    i++;
+                    RefNo = dr[0].ToString();
+                    PCode = dr[1].ToString();
+                    BrandId = dr[2].ToString();
+                    CatId = dr[3].ToString();
+                    Store = dr[4].ToString();
+                    Status = dr[5].ToString();
+                    Model = dr[6].ToString();
+                    SN = dr[7].ToString();
+                    R_Date = dr[8].ToString();
+                    Description = dr[9].ToString();
+                    Prepared = dr[10].ToString();
+                    Quantity = dr[11].ToString();
+                    StockinDate = dr[12].ToString();
+                    Stockinby = dr[13].ToString();
+                    Location = dr[14].ToString();
+
+
+
+
+                    dataGridView1.Rows.Add(i, RefNo, PCode, BrandId, CatId, Store, Status, Model, SN, R_Date, Description, Prepared, Quantity, StockinDate, Stockinby, Location);
+
+                }
+                dr.Close();
+                cn.Close();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error Fetching Delivery History " + ex.Message, "Error Loading Data", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
