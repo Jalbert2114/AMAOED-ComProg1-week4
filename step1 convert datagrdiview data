@@ -1,0 +1,26 @@
+private DataTable ConvertGridToDataTable()
+{
+    DataTable dt = new DataTable();
+
+    // Add columns (must match RDLC DataSet structure)
+    foreach (DataGridViewColumn col in dataGridView1.Columns)
+    {
+        dt.Columns.Add(col.Name, typeof(string)); // adjust type if needed
+    }
+
+    // Add rows
+    foreach (DataGridViewRow row in dataGridView1.Rows)
+    {
+        if (!row.IsNewRow)
+        {
+            DataRow dRow = dt.NewRow();
+            foreach (DataGridViewColumn col in dataGridView1.Columns)
+            {
+                dRow[col.Name] = row.Cells[col.Index].Value?.ToString() ?? "";
+            }
+            dt.Rows.Add(dRow);
+        }
+    }
+
+    return dt;
+}
