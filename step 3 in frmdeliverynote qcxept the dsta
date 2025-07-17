@@ -1,0 +1,10 @@
+public void LoadReportWithGridData(DataTable dt)
+{
+    ReportDataSource rds = new ReportDataSource("DataSet1", dt); // match your RDLC dataset name
+
+    reportViewer1.LocalReport.ReportPath = "DeliverynoteLayout.rdlc";
+    reportViewer1.LocalReport.DataSources.Clear();
+    reportViewer1.LocalReport.DataSources.Add(rds);
+
+    reportViewer1.RefreshReport();
+}
