@@ -1,0 +1,9 @@
+private void btnPrint_Click(object sender, EventArgs e)
+{
+    DataTable dt = ConvertGridToDataTable();
+
+    // Show report viewer in a new form
+    frmDeliveryNote reportForm = new frmDeliveryNote();
+    reportForm.LoadReportWithGridData(dt);
+    reportForm.ShowDialog();
+}
