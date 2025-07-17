@@ -1,1 +1,1 @@
-call when searching
+LoadStockinGrid(txtRefNo.Text.Trim());
