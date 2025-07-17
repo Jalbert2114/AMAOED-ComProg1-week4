@@ -1,0 +1,7 @@
+private void LoadStockinGrid(string refno)
+{
+    Deliverynote.tblStockinDataTable dt = new Deliverynote.tblStockinDataTable();
+    DeliverynoteTableAdapters.tblStockinTableAdapter adapter = new DeliverynoteTableAdapters.tblStockinTableAdapter();
+    adapter.FillByRefno(dt, refno); // Use the method created from XSD
+    dataGridView1.DataSource = dt;
+}
