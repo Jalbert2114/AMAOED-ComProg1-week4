@@ -1,0 +1,98 @@
+Preparation
+
+1. Confirm Firmware Compatibility
+
+Ensure both 601E and 601F are running the same FortiOS version (e.g., 7.2.6 on both).
+
+If not, upgrade/downgrade the target 601F unit before proceeding.
+
+
+
+2. Download 601E Configuration
+
+From the 601E GUI:
+Dashboard > Backup & Restore > Backup Configuration
+
+Choose unencrypted if you plan to manually edit the file.
+
+
+
+3. Identify Interface Mappings
+
+Make a list of physical interface names on both models (e.g., port1 on 601E may not match port1 on 601F).
+
+Run get system interface physical on both to compare.
+
+
+
+
+
+---
+
+🛠️ Configuration Conversion
+
+1. Open the 601E config in a text editor.
+
+
+2. Modify Interface Names:
+
+Replace 601E interfaces with 601F equivalents.
+
+Example: edit "port3" → change to edit "wan1" or correct port name on 601F.
+
+
+
+3. Remove Hardware-Specific Entries (optional but recommended):
+
+Delete or comment out:
+
+config system virtual-switch
+
+config system switch-interface
+
+config system ha (if reconfiguring HA manually)
+
+config log settings (adjust for new device)
+
+Any set snmp-index values specific to the old device
+
+
+
+
+4. Check for Unsupported Features:
+
+Features deprecated or unsupported on the new hardware should be removed.
+
+
+
+
+
+---
+
+🧪 Upload and Test on FortiGate 601F
+
+1. Access 601F via GUI or Console.
+
+
+2. Upload Modified Config:
+
+Go to Dashboard > Backup & Restore > Restore
+
+Select the modified config file and restore.
+
+
+
+3. Reboot the Device.
+
+
+4. Verify Configuration
+
+Check interfaces, routing, policies, VPNs, SD-WAN, etc.
+
+Run diag debug config-error-log read to spot issues.
+
+
+
+
+
+---
