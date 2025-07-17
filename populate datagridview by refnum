@@ -1,0 +1,14 @@
+private void LoadStockinByRefNo(string refno)
+{
+    using (SqlConnection cn = new SqlConnection(dbcon.MyConnection()))
+    {
+        cn.Open();
+        SqlCommand cm = new SqlCommand("SELECT * FROM tblStockin WHERE refno = @refno", cn);
+        cm.Parameters.AddWithValue("@refno", refno);
+
+        SqlDataAdapter da = new SqlDataAdapter(cm);
+        DataTable dt = new DataTable();
+        da.Fill(dt);
+        dataGridView1.DataSource = dt;
+    }
+}
