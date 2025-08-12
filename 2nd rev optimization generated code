@@ -1,0 +1,57 @@
+private string GenerateProductCode(string brandName)
+{
+    string prefix = brandName.Substring(0, 1).ToUpper();
+    string newCode = "";
+
+    try
+    {
+        // 1️⃣ Check if other brands start with the same first letter
+        cn.Open();
+        using (SqlCommand checkSimilar = new SqlCommand(
+            "SELECT COUNT(*) FROM tblBrand WHERE brand LIKE @prefix + '%'", cn))
+        {
+            checkSimilar.Parameters.AddWithValue("@prefix", prefix);
+            int similarCount = (int)checkSimilar.ExecuteScalar();
+
+            if (similarCount > 1)
+            {
+                prefix = brandName.Length >= 3
+                    ? brandName.Substring(0, 3).ToUpper()
+                    : brandName.ToUpper();
+            }
+        }
+        cn.Close();
+
+        // 2️⃣ Get MAX number for this prefix from all tables in one query
+        string query = @"
+            WITH AllCodes AS (
+                SELECT P_Code FROM tblReceivedProduct
+                UNION ALL
+                SELECT P_Code FROM tblStockin
+                UNION ALL
+                SELECT P_Code FROM tblFaultyItems
+            )
+            SELECT ISNULL(
+                MAX(CAST(SUBSTRING(P_Code, LEN(@pfx) + 2, 20) AS INT)), 0
+            )
+            FROM AllCodes
+            WHERE P_Code LIKE @pfx + '-%';";
+
+        cn.Open();
+        using (SqlCommand cmd = new SqlCommand(query, cn))
+        {
+            cmd.Parameters.AddWithValue("@pfx", prefix);
+            int maxNum = Convert.ToInt32(cmd.ExecuteScalar());
+            int nextNum = maxNum + 1;
+            newCode = $"{prefix}-{nextNum:D4}";
+        }
+        cn.Close();
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show("Error generating product code: " + ex.Message);
+        if (cn.State == ConnectionState.Open) cn.Close();
+    }
+
+    return newCode;
+}
