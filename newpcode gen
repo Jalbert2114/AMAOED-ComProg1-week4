@@ -1,0 +1,54 @@
+private string GenerateProductCode(string brandName)
+{
+    string prefix = brandName.Substring(0, Math.Min(1, brandName.Length)).ToUpper();
+
+    using (var cn = new SqlConnection(_yourConnString))
+    {
+        cn.Open();
+
+        // 1) Check if multiple brands share the same first letter → use 3-letter prefix
+        using (var checkSimilar = new SqlCommand(
+            "SELECT COUNT(*) FROM tblBrand WHERE brand LIKE @prefix + '%';", cn))
+        {
+            checkSimilar.Parameters.AddWithValue("@prefix", prefix);
+            int similarCount = (int)checkSimilar.ExecuteScalar();
+            if (similarCount > 1)
+            {
+                prefix = brandName.Length >= 3 ? brandName.Substring(0, 3).ToUpper()
+                                               : brandName.ToUpper();
+            }
+        }
+
+        // 2) Get max used number for this prefix from all sources (single round-trip)
+        string maxSql = @"
+            WITH AllCodes AS (
+                SELECT P_Code FROM tblReceivedProduct
+                UNION ALL
+                SELECT P_Code FROM tblStockin
+                UNION ALL
+                SELECT P_Code FROM tblFaultyItems
+            )
+            SELECT ISNULL(
+                MAX(CAST(SUBSTRING(P_Code, LEN(@pfx) + 2, 20) AS INT))
+            , 0)
+            FROM AllCodes
+            WHERE P_Code LIKE @pfx + '-%';";
+
+        int nextNum = 1;
+        using (var cmd = new SqlCommand(maxSql, cn))
+        {
+            cmd.Parameters.AddWithValue("@pfx", prefix);
+            object o = cmd.ExecuteScalar();
+            int maxNum = (o != DBNull.Value) ? Convert.ToInt32(o) : 0;
+            nextNum = maxNum + 1;
+        }
+
+        return $"{prefix}-{nextNum:D4}";
+    }
+}
+
+
+≠=======================================
+CREATE INDEX IX_tblReceivedProduct_PCode ON tblReceivedProduct(P_Code);
+CREATE INDEX IX_tblStockin_PCode         ON tblStockin(P_Code);
+CREATE INDEX IX_tblFaultyItems_PCode     ON tblFaultyItems(P_Code);
