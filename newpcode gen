@@ -52,3 +52,10 @@ private string GenerateProductCode(string brandName)
 CREATE INDEX IX_tblReceivedProduct_PCode ON tblReceivedProduct(P_Code);
 CREATE INDEX IX_tblStockin_PCode         ON tblStockin(P_Code);
 CREATE INDEX IX_tblFaultyItems_PCode     ON tblFaultyItems(P_Code);
+
+===============================================
+private void cmbBrand_SelectedIndexChanged(object sender, EventArgs e)
+{
+    if (cmbBrand.SelectedItem == null) return;
+    txtPcode.Text = GenerateProductCode(cmbBrand.SelectedItem.ToString());
+}
